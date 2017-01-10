@@ -12,8 +12,7 @@ if (empty($_SERVER['PHP_AUTH_USER'])) {
     header('HTTP/1.0 401 Unauthorized');
     exit();
 }
-$key = false;
-if (isset($admins[$_SERVER['PHP_AUTH_USER']]) && $_SERVER['PHP_AUTH_PW'] == $admins[$_SERVER['PHP_AUTH_USER']]) {
+if (isset($_SERVER['PHP_AUTH_USER']) == $admins['root'] && $_SERVER['PHP_AUTH_PW'] == $admins['admin']) {
     $key = true;
 }
 if (empty($key)) {
@@ -78,7 +77,6 @@ function bb_tags($text)
     );
     return str_ireplace($bb, $tag, $text);
 }
-//end functions for bb-tags
 
 //variables
 $page = !empty($_GET['page']) ? $_GET['page'] : 1;
@@ -86,24 +84,48 @@ $delete = !empty($_POST['delete']) ? $_POST['delete'] : array();
 $posts = array();
 $file = dirScan('data');
 ?>
-
-//script
 <?php
+//script
 
-echo !empty($delete) ? "<b>Выбранны посты с id:</b></b><br>". implode('<br>', $delete) : '';
-
-?>
+if (!empty($_POST['ok'])) {
+    if (count($delete) > 0) {
+        $posts = unserialize(file_get_contents('data/'. $page));
+        for ($i = 0; $i < count($delete); ++$i) {
+            $posts[$delete[$i]] ['name'] = '';
+            $posts[$delete[$i]] ['mess'] = 'Удалено модератором';
+        }
+        file_put_contents('data/'. $page, serialize($posts));
+        header('location: http://'. $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?page=' . $page);
+        exit();
+    }
+}
 
 //view
+?>
 <form action="" method="post">
-
-
+    <div style="padding-left: 50px">
+        <?php echo pageMenu($page, $file); ?>
+    </div>
+    <?php
+    if (file_exists('data/' . $page)) {
+        $posts = unserialize(file_get_contents('data/' . $page));
+        foreach ($posts as $id => $post) {
+            $date = $post['date'];
+            $name = htmlspecialchars($post['name']);
+            $mess = nl2br(bb_tags(htmlspecialchars($post['mess'])));
+            ?>
+            <div style="border: 1px solid; width: 70%; background: #66FFFF; min-height: 100px; margin: 5px; padding: 5px;">
+                <label><input type="checkbox" name="delete[]" value="<?php echo $id; ?>"></label>
+                <?php echo $date; ?> / <strong><?php echo $name; ?></strong>
+                <hr width="30%" align="left">
+                <?php echo $mess; ?>
+            </div>
+            <?php
+        }
+    }
+    ?>
+    <div style="padding-left: 50px">
+        <?php echo pageMenu($page, $file); ?>
+    </div>
+    <input name="ok" type="submit" value="Удалить запись" onclick="return confirm('Вы уверены?')">
 </form>
-
-
-
-
-
-
-
-
