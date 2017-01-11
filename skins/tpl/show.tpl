@@ -1,4 +1,4 @@
-<div class="guest_post"><div class="guest_paginator">
+<div class="guest_paginator">
     <?php echo pageMenu($page, $file); ?>
 </div>
 <?php
@@ -9,8 +9,9 @@ $date = $post['date'];
 $name = htmlspecialchars($post['name']);
 $mess = nl2br(bb_tags(htmlspecialchars($post['mess'])));
 ?>
-        <?php echo $date; ?> / <strong><?php echo $name; ?></strong>
+<div class="guest_post">
     <div class="guest_mess">
+        <?php echo $date; ?> / <strong><?php echo $name; ?></strong>
         <?php echo $mess; ?>
     </div
             <?php

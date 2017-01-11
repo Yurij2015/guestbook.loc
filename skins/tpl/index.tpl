@@ -18,7 +18,7 @@
     <?php echo $content; ?>
 </div>
 <footer class="footer">
-    Copyright &copy; 2017. Гостевая книга!
+    Copyright &copy; 2017. <a href="../../index.php">Гостевая книга!</a> | <a href="../../admin.php">AdminPanel</a>
 </footer>
 </body>
 </html>
